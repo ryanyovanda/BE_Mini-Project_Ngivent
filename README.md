@@ -64,6 +64,7 @@ A Postman collection is included to help you test the authentication system.
 - **Login:** `POST /api/v1/auth/login`
 - **Register:** `POST /api/v1/users/register`
 - **Bulk Register:** `POST /api/v1/users/bulk`
+- **Refresh Token:** `POST /api/v1/auth/refresh`
 
 ### Users
 

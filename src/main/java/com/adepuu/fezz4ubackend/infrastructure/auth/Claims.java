@@ -32,7 +32,7 @@ public class Claims {
     return getClaimsFromJwt().get("exp").toString();
   }
 
-  public static String getJwtTokeString() {
+  public static String getJwtTokenString() {
     SecurityContext context = SecurityContextHolder.getContext();
     Authentication authentication = context.getAuthentication();
 
@@ -56,6 +56,10 @@ public class Claims {
     return null;
   }
 
+  public static String getTokenTypeFromJwt() {
+    return (String) getClaimsFromJwt().get("type");
+  }
+
   public static Long getUserIdFromJwt() {
     Object userId = getClaimsFromJwt().get("userId");
     if (userId instanceof Integer) {
@@ -66,5 +70,13 @@ public class Claims {
       return Long.parseLong((String) userId);
     }
     throw new IllegalStateException("User ID not found in JWT");
+  }
+
+  public static String getRefreshTokenFromJwt() {
+    return (String) getClaimsFromJwt().get("refresh_token");
+  }
+
+  public static String getRefreshTokenExpirationDate() {
+    return getClaimsFromJwt().get("refresh_exp").toString();
   }
 }

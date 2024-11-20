@@ -1,15 +1,22 @@
 package com.adepuu.fezz4ubackend.infrastructure.users.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.adepuu.fezz4ubackend.common.response.Response;
 import com.adepuu.fezz4ubackend.infrastructure.auth.Claims;
 import com.adepuu.fezz4ubackend.infrastructure.users.dto.BulkCreateUserRequestDTO;
 import com.adepuu.fezz4ubackend.infrastructure.users.dto.CreateUserRequestDTO;
 import com.adepuu.fezz4ubackend.usecase.user.CreateUserUsecase;
 import com.adepuu.fezz4ubackend.usecase.user.GetUsersUseCase;
+
 import lombok.extern.java.Log;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 
 @Log
 @RestController
@@ -26,7 +33,7 @@ public class UsersPublicController {
   //  Simple RBAC where only logged in admins are allowed to access get all users endpoint
   @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
   @GetMapping
-  public ResponseEntity<?> getUsers(@RequestParam final String isActive) {
+  public ResponseEntity<?> getUsers() {
     String email = Claims.getEmailFromJwt();
     log.info("Requester email is: " + email);
     return Response.successfulResponse("Get all users success", getUsersUseCase.getAllUsers());

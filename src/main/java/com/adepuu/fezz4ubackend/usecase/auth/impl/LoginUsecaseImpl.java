@@ -2,7 +2,7 @@ package com.adepuu.fezz4ubackend.usecase.auth.impl;
 
 import com.adepuu.fezz4ubackend.common.exceptions.DataNotFoundException;
 import com.adepuu.fezz4ubackend.infrastructure.auth.dto.LoginRequestDTO;
-import com.adepuu.fezz4ubackend.infrastructure.auth.dto.LoginResponseDTO;
+import com.adepuu.fezz4ubackend.infrastructure.auth.dto.TokenPairResponseDTO;
 import com.adepuu.fezz4ubackend.usecase.auth.LoginUsecase;
 import com.adepuu.fezz4ubackend.usecase.auth.TokenGenerationUsecase;
 
@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 @Log
 @Service
 public class LoginUsecaseImpl implements LoginUsecase {
+  private final long ACCESS_TOKEN_EXPIRY = 900L;
+  private final long REFRESH_TOKEN_EXPIRY = 86400L;
+
   private final AuthenticationManager authenticationManager;
   private final TokenGenerationUsecase tokenService;
 
@@ -25,7 +28,7 @@ public class LoginUsecaseImpl implements LoginUsecase {
   }
 
   @Override
-  public LoginResponseDTO authenticateUser(LoginRequestDTO req) {
+  public TokenPairResponseDTO authenticateUser(LoginRequestDTO req) {
     try {
       log.info("Loggingin with");
       log.info(req.getEmail());
@@ -33,8 +36,9 @@ public class LoginUsecaseImpl implements LoginUsecase {
       Authentication authentication = authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
       );
-      String token = tokenService.generateToken(authentication);
-      return new LoginResponseDTO(token);
+      String accessToken = tokenService.generateToken(authentication, TokenGenerationUsecase.TokenType.ACCESS);
+      String refreshToken = tokenService.generateToken(authentication, TokenGenerationUsecase.TokenType.REFRESH);
+      return new TokenPairResponseDTO(accessToken, refreshToken, "Bearer");
     } catch (AuthenticationException e) {
       throw new DataNotFoundException("Wrong credentials");
     }
