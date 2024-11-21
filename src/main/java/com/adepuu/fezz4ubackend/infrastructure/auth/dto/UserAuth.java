@@ -34,24 +34,4 @@ public class UserAuth implements UserDetails {
   public String getPassword() {
     return this.user.getPassword();
   }
-
-  @Override
-  public boolean isAccountNonExpired() {
-    return UserDetails.super.isAccountNonExpired();
-  }
-
-  @Override
-  public boolean isAccountNonLocked() {
-    return UserDetails.super.isAccountNonLocked();
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return UserDetails.super.isCredentialsNonExpired();
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return UserDetails.super.isEnabled();
-  }
 }
