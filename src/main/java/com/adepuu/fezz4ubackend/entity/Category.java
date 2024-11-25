@@ -1,6 +1,9 @@
 package com.adepuu.fezz4ubackend.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -12,17 +15,16 @@ import java.time.OffsetDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "roles")
-public class Role {
+@Table(name = "categories")
+public class Category {
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "roles_id_gen")
-  @SequenceGenerator(name = "roles_id_gen", sequenceName = "roles_role_id_seq", allocationSize = 1)
-  @Column(name = "role_id", nullable = false)
-  private Integer id;
+  @ColumnDefault("nextval('categories_category_id_seq'::regclass)")
+  @Column(name = "category_id", nullable = false)
+  private Long id;
 
-  @Size(max = 50)
+  @Size(max = 100)
   @NotNull
-  @Column(name = "name", nullable = false, length = 50)
+  @Column(name = "name", nullable = false, length = 100)
   private String name;
 
   @NotNull
@@ -37,4 +39,5 @@ public class Role {
 
   @Column(name = "deleted_at")
   private OffsetDateTime deletedAt;
+
 }

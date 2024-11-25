@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -77,5 +76,9 @@ public class User {
   @PreRemove
   protected void onRemove() {
     deletedAt = OffsetDateTime.now();
+  }
+
+  public Boolean isOrganizer() {
+    return roles.stream().anyMatch(role -> role.getName().equals("ORGANIZER"));
   }
 }

@@ -14,7 +14,6 @@ import com.adepuu.fezz4ubackend.common.response.Response;
 import com.adepuu.fezz4ubackend.infrastructure.auth.Claims;
 import com.adepuu.fezz4ubackend.infrastructure.auth.dto.LoginRequestDTO;
 import com.adepuu.fezz4ubackend.usecase.auth.LoginUsecase;
-import com.adepuu.fezz4ubackend.usecase.auth.TokenBlacklistUsecase;
 import com.adepuu.fezz4ubackend.usecase.auth.TokenRefreshUsecase;
 
 @RestController

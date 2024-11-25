@@ -6,7 +6,6 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.adepuu.fezz4ubackend.infrastructure.auth.Claims;
 import com.adepuu.fezz4ubackend.usecase.auth.TokenBlacklistUsecase;
 
 import jakarta.servlet.FilterChain;
