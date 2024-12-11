@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.adepuu</groupId>
-	<artifactId>fezz4ubackend</artifactId>
+	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>fezz4ubackend</name>
 	<description>Money Tracker App with spring boot</description>
