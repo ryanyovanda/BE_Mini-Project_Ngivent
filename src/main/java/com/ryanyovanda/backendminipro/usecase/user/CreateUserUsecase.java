@@ -8,7 +8,13 @@ import com.ryanyovanda.backendminipro.infrastructure.users.dto.UserDetailRespons
 import java.util.List;
 
 public interface CreateUserUsecase {
-  UserDetailResponseDTO createUser(CreateUserRequestDTO req);
-  User createUserWithEntity(User req);
-  List<User> bulkCreateUser(BulkCreateUserRequestDTO req);
+  UserDetailResponseDTO createUser(CreateUserRequestDTO req); // Main user creation logic
+
+  User createUserWithEntity(User req); // Allows user creation from User entity
+
+  List<User> bulkCreateUser(BulkCreateUserRequestDTO req); // Handles bulk user creation
+
+  User getUserByReferralCode(String referralCode); // Retrieves user by referral code
+
+  void addVoucher(Long userId, String type, int value); // Adds a voucher for a user
 }

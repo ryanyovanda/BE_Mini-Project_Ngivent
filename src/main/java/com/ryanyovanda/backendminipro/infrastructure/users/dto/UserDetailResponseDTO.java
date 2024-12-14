@@ -14,4 +14,7 @@ public class UserDetailResponseDTO implements Serializable {
   private String email;
   private String profilePictureUrl;
   private Boolean isOnboardingFinished = false;
+  private String referralCode; // Add this to show the user's referral code
+  private Long referrerId; // Add this to show the referrer ID if used
 }
+

@@ -21,6 +21,10 @@ public class User {
   @Column(name = "user_id", nullable = false)
   private Long id;
 
+  @ManyToOne
+  @JoinColumn(name = "referrer_id", referencedColumnName = "user_id") // Reference the correct column
+  private User referrer;
+
   @Size(max = 50)
   @NotNull
   @Column(name = "email", nullable = false, length = 50)
@@ -76,13 +80,26 @@ public class User {
 //  @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 //  @JoinTable(name = "user_point", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "point_id"))
 //  private Set<Role> roles = new HashSet<>();
+//import java.util.Random;
 
   @PrePersist
   protected void onCreate() {
     createdAt = OffsetDateTime.now();
     updatedAt = OffsetDateTime.now();
-    this.referralCode = UUID.randomUUID().toString();
+    this.referralCode = generateRandomCode();
   }
+
+  // Generate a 5-character alphanumeric referral code
+  private String generateRandomCode() {
+    String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    StringBuilder code = new StringBuilder();
+    Random random = new Random();
+    for (int i = 0; i < 5; i++) {
+      code.append(characters.charAt(random.nextInt(characters.length())));
+    }
+    return code.toString();
+  }
+
 
   @PreUpdate
   protected void onUpdate() {
