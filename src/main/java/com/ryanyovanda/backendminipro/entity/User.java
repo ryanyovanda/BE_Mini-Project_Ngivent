@@ -55,11 +55,6 @@ public class User {
   @Column(name = "used_referral_code", length = Integer.MAX_VALUE)
   private String usedReferralCode;
 
-//  @NotNull
-//  @ColumnDefault("false")
-//  @Column(name = "is_first_time_discount", nullable = false)
-//  private Boolean isFirstTimeDiscount = false;
-
   @NotNull
   @ColumnDefault("CURRENT_TIMESTAMP")
   @Column(name = "created_at", nullable = false)
@@ -77,11 +72,6 @@ public class User {
   @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
   private Set<Role> roles = new HashSet<>();
 
-//  @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-//  @JoinTable(name = "user_point", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "point_id"))
-//  private Set<Role> roles = new HashSet<>();
-//import java.util.Random;
-
   @PrePersist
   protected void onCreate() {
     createdAt = OffsetDateTime.now();
@@ -89,7 +79,6 @@ public class User {
     this.referralCode = generateRandomCode();
   }
 
-  // Generate a 5-character alphanumeric referral code
   private String generateRandomCode() {
     String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     StringBuilder code = new StringBuilder();

@@ -26,103 +26,47 @@ VALUES
     );
 
 -- Seed data for users table
-INSERT INTO
-    users (
-    email,
-    password,
-    pin,
-    profile_picture_url,
-    is_onboarding_finished,
-    created_at,
-    updated_at
-)
-VALUES
-    (
-        'alice@example.com',
-        'hashedpassword1',
-        '1234',
-        'http://example.com/profiles/alice.jpg',
-        true,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP
-    ),
-    (
-        'bob@example.com',
-        'hashedpassword2',
-        '5678',
-        'http://example.com/profiles/bob.jpg',
-        false,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP
-    ),
-    (
-        'charlie@example.com',
-        'hashedpassword3',
-        '9012',
-        'http://example.com/profiles/charlie.jpg',
-        true,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP
-    );
+INSERT INTO users (user_id,email, password, pin, is_onboarding_finished, referral_code, created_at, updated_at)
+ VALUES
+ (1,'organizer1@example.com', 'password1', '1234', TRUE, 'ORG123', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+ (2,'organizer2@example.com', 'password2', '5678', TRUE, 'ORG456', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+ (3,'organizer3@example.com', 'password3', '9012', TRUE, 'ORG789', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+ (4,'user1@example.com', 'password4', '3456', TRUE, 'USR123', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+ (5,'user2@example.com', 'password5', '7890', TRUE, 'USR456', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+ (6,'user3@example.com', 'password6', '1122', TRUE, 'USR789', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Seed data for user_roles table
 INSERT INTO
     user_roles (user_id, role_id, assigned_at)
 VALUES
     (
-        (
-            SELECT
-                user_id
-            FROM
-                users
-            WHERE
-                email = 'alice@example.com'
-        ),
-        (
-            SELECT
-                role_id
-            FROM
-                roles
-            WHERE
-                name = 'ADMIN'
-        ),
+        (SELECT user_id FROM users WHERE email = 'organizer1@example.com'),
+        (SELECT role_id FROM roles WHERE name = 'ORGANIZER'),
         CURRENT_TIMESTAMP
     ),
     (
-        (
-            SELECT
-                user_id
-            FROM
-                users
-            WHERE
-                email = 'bob@example.com'
-        ),
-        (
-            SELECT
-                role_id
-            FROM
-                roles
-            WHERE
-                name = 'USER'
-        ),
+        (SELECT user_id FROM users WHERE email = 'organizer2@example.com'),
+        (SELECT role_id FROM roles WHERE name = 'ORGANIZER'),
         CURRENT_TIMESTAMP
     ),
     (
-        (
-            SELECT
-                user_id
-            FROM
-                users
-            WHERE
-                email = 'charlie@example.com'
-        ),
-        (
-            SELECT
-                role_id
-            FROM
-                roles
-            WHERE
-                name = 'ORGANIZER'
-        ),
+        (SELECT user_id FROM users WHERE email = 'organizer3@example.com'),
+        (SELECT role_id FROM roles WHERE name = 'ORGANIZER'),
+        CURRENT_TIMESTAMP
+    ),
+    (
+        (SELECT user_id FROM users WHERE email = 'user1@example.com'),
+        (SELECT role_id FROM roles WHERE name = 'USER'),
+        CURRENT_TIMESTAMP
+    ),
+    (
+        (SELECT user_id FROM users WHERE email = 'user2@example.com'),
+        (SELECT role_id FROM roles WHERE name = 'USER'),
+        CURRENT_TIMESTAMP
+    ),
+    (
+        (SELECT user_id FROM users WHERE email = 'user3@example.com'),
+        (SELECT role_id FROM roles WHERE name = 'USER'),
         CURRENT_TIMESTAMP
     );
+

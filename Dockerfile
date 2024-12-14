@@ -1,5 +1,3 @@
-# Multistage build proccess
-
 # Stage 1: Build the application
 FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
@@ -8,16 +6,16 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
-# Copy the source code and build the application
+# Copy the source code and build the application, skipping tests
 COPY src ./src
-RUN mmv
+RUN mvn clean package -DskipTests
 
 # Stage 2: Create the final image
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Copy the built jar file from the build stage
-COPY --from=build /app/target/Backend-Ngivent.jar app.jar
+COPY --from=build /app/target/backendminipro-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port the app runs on
 EXPOSE 8080

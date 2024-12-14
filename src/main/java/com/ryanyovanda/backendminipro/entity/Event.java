@@ -72,17 +72,10 @@ public class Event {
     @JoinTable(name = "event_categories", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
 
-//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-//    @JsonIgnoreProperties("event")
-//    private Set<Ticket> tickets;
     @OneToMany(mappedBy = "event")
     @JsonIgnoreProperties("event")
     private Set<Ticket> tickets;
 
-//    @OneToMany(mappedBy = "event")
-//    @JsonIgnoreProperties("event")
-//    @JsonIgnore
-//    private Set<Review> reviews;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at", nullable = false, updatable = false)
