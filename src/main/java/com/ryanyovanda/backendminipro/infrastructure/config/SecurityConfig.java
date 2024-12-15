@@ -60,7 +60,7 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Attach CORS configuration
+            .cors(cors -> cors.configurationSource(noCorsConfigurationSource())) // Attach no-CORS configuration
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/error/**").permitAll()
                     .requestMatchers("/api/v1/auth/login").permitAll()
@@ -105,21 +105,14 @@ public class SecurityConfig {
   }
 
   @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
+  public CorsConfigurationSource noCorsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    String allowedOrigins = System.getenv("ALLOWED_ORIGINS"); // Example: "https://frontend1.com,https://frontend2.com"
-    if (allowedOrigins != null) {
-      configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
-    } else {
-      configuration.setAllowedOrigins(Arrays.asList("https://fe-mini-project-ngivent-3zc0yvpz3.vercel.app"));
-    }
-
+    // Allow all origins, methods, and headers
+    configuration.addAllowedOriginPattern("*"); // Match any origin
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
-
-    configuration.setAllowCredentials(true);
+    configuration.setAllowedHeaders(Arrays.asList("*")); // Match any header
+    configuration.setAllowCredentials(true); // Allow credentials such as cookies
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
