@@ -60,12 +60,15 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(noCorsConfigurationSource())) // Attach no-CORS configuration
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
+                    // Define public routes
                     .requestMatchers("/error/**").permitAll()
                     .requestMatchers("/api/v1/auth/login").permitAll()
                     .requestMatchers("/api/v1/users/register").permitAll()
                     .requestMatchers("/api/v1/analytic").permitAll()
+
+                    // Define rest of the routes to be private
                     .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .oauth2ResourceServer(oauth2 -> {
@@ -79,10 +82,13 @@ public class SecurityConfig {
                     }
                   }
                 }
+
+                // Get from headers instead of cookies
                 var header = request.getHeader("Authorization");
                 if (header != null) {
                   return header.replace("Bearer ", "");
                 }
+
                 return null;
               });
             })
@@ -105,18 +111,15 @@ public class SecurityConfig {
   }
 
   @Bean
-  public CorsConfigurationSource noCorsConfigurationSource() {
+  public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-
-    // Allow all origins, methods, and headers
-    configuration.addAllowedOriginPattern("*"); // Match any origin
+    configuration.setAllowedOrigins(Arrays.asList("https://fe-mini-project-ngivent-3zc0yvpz3.vercel.app"));
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(Arrays.asList("*")); // Match any header
-    configuration.setAllowCredentials(true); // Allow credentials such as cookies
+    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+    configuration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
-
     return source;
   }
 }
