@@ -60,15 +60,12 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Attach CORS configuration
             .authorizeHttpRequests(auth -> auth
-                    // Define public routes
                     .requestMatchers("/error/**").permitAll()
                     .requestMatchers("/api/v1/auth/login").permitAll()
                     .requestMatchers("/api/v1/users/register").permitAll()
                     .requestMatchers("/api/v1/analytic").permitAll()
-
-                    // Define rest of the routes to be private
                     .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .oauth2ResourceServer(oauth2 -> {
@@ -82,13 +79,10 @@ public class SecurityConfig {
                     }
                   }
                 }
-
-                // Get from headers instead of cookies
                 var header = request.getHeader("Authorization");
                 if (header != null) {
                   return header.replace("Bearer ", "");
                 }
-
                 return null;
               });
             })
@@ -113,13 +107,23 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList("https://fe-mini-project-ngivent-3zc0yvpz3.vercel.app"));
+
+    String allowedOrigins = System.getenv("ALLOWED_ORIGINS"); // Example: "https://frontend1.com,https://frontend2.com"
+    if (allowedOrigins != null) {
+      configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+    } else {
+      configuration.setAllowedOrigins(Arrays.asList("https://fe-mini-project-ngivent-3zc0yvpz3.vercel.app"));
+    }
+
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+
+    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+
     configuration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
+
     return source;
   }
 }
