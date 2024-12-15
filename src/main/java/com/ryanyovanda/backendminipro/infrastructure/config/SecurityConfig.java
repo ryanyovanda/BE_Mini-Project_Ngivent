@@ -20,9 +20,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -34,10 +38,10 @@ public class SecurityConfig {
   private final TokenBlacklist tokenBlacklistFilter;
 
   public SecurityConfig(
-      GetUserAuthDetailsUsecase getUserAuthDetailsUsecase,
-      JwtConfigProperties jwtConfigProperties,
-      PasswordEncoder passwordEncoder,
-      TokenBlacklist tokenBlacklistFilter) {
+          GetUserAuthDetailsUsecase getUserAuthDetailsUsecase,
+          JwtConfigProperties jwtConfigProperties,
+          PasswordEncoder passwordEncoder,
+          TokenBlacklist tokenBlacklistFilter) {
     this.getUserAuthDetailsUsecase = getUserAuthDetailsUsecase;
     this.jwtConfigProperties = jwtConfigProperties;
     this.passwordEncoder = passwordEncoder;
@@ -55,43 +59,42 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
-        .csrf(AbstractHttpConfigurer::disable)
-        .cors(cors -> cors.configurationSource(new CorsConfigurationSourceImpl()))
-        .authorizeHttpRequests(auth -> auth
-            // Define public routes
-            .requestMatchers("/error/**").permitAll()
-            .requestMatchers("/api/v1/auth/login").permitAll()
-            .requestMatchers("/api/v1/users/register").permitAll()
-                .requestMatchers("/api/v1/analytic").permitAll()
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .authorizeHttpRequests(auth -> auth
+                    // Define public routes
+                    .requestMatchers("/error/**").permitAll()
+                    .requestMatchers("/api/v1/auth/login").permitAll()
+                    .requestMatchers("/api/v1/users/register").permitAll()
+                    .requestMatchers("/api/v1/analytic").permitAll()
 
-
-            // Define rest of the routes to be private
-            .anyRequest().authenticated())
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .oauth2ResourceServer(oauth2 -> {
-          oauth2.jwt(jwt -> jwt.decoder(jwtDecoder()));
-          oauth2.bearerTokenResolver(request -> {
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-              for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("SID")) {
-                  return cookie.getValue();
+                    // Define rest of the routes to be private
+                    .anyRequest().authenticated())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .oauth2ResourceServer(oauth2 -> {
+              oauth2.jwt(jwt -> jwt.decoder(jwtDecoder()));
+              oauth2.bearerTokenResolver(request -> {
+                Cookie[] cookies = request.getCookies();
+                if (cookies != null) {
+                  for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("SID")) {
+                      return cookie.getValue();
+                    }
+                  }
                 }
-              }
-            }
 
-            // Get from headers instead of cookies
-            var header = request.getHeader("Authorization");
-            if (header != null) {
-              return header.replace("Bearer ", "");
-            }
+                // Get from headers instead of cookies
+                var header = request.getHeader("Authorization");
+                if (header != null) {
+                  return header.replace("Bearer ", "");
+                }
 
-            return null;
-          });
-        })
-        .addFilterAfter(tokenBlacklistFilter, BearerTokenAuthenticationFilter.class)
-        .userDetailsService(getUserAuthDetailsUsecase)
-        .build();
+                return null;
+              });
+            })
+            .addFilterAfter(tokenBlacklistFilter, BearerTokenAuthenticationFilter.class)
+            .userDetailsService(getUserAuthDetailsUsecase)
+            .build();
   }
 
   @Bean
@@ -103,7 +106,20 @@ public class SecurityConfig {
   @Bean
   public JwtEncoder jwtEncoder() {
     SecretKey key = new SecretKeySpec(jwtConfigProperties.getSecret().getBytes(), "HmacSHA256");
-    JWKSource<SecurityContext> immutableSecret = new ImmutableSecret<SecurityContext>(key);
+    JWKSource<SecurityContext> immutableSecret = new ImmutableSecret<>(key);
     return new NimbusJwtEncoder(immutableSecret);
+  }
+
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.asList("https://fe-mini-project-ngivent-3zc0yvpz3.vercel.app"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+    configuration.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
   }
 }
